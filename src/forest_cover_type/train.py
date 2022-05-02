@@ -4,9 +4,11 @@ from joblib import dump
 import click
 import mlflow
 import mlflow.sklearn
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, log_loss, f1_score, make_scorer
+from sklearn.model_selection import cross_val_score, train_test_split
+import numpy as np
 
-from .data import get_dataset
+from .data import get_dataset, get_train_test_splits
 from .pipeline import create_pipeline
 
 
@@ -45,7 +47,7 @@ from .pipeline import create_pipeline
 )
 @click.option(
     "--max-iter",
-    default=100,
+    default=300,
     type=int,
     show_default=True,
 )
@@ -64,19 +66,33 @@ def train(
     max_iter: int,
     logreg_c: float,
 ) -> None:
-    features_train, features_val, target_train, target_val = get_dataset(
-        dataset_path,
-        random_state,
-        test_split_ratio,
+    features, target = get_dataset(
+        dataset_path
     )
+    # features_train, features_val, target_train, target_val = train_test_split(
+    #     features,
+    #     target,
+    #     random_state,
+    #     test_split_ratio
+    # )
     with mlflow.start_run():
         pipeline = create_pipeline(use_scaler, max_iter, logreg_c, random_state)
-        pipeline.fit(features_train, target_train)
-        accuracy = accuracy_score(target_val, pipeline.predict(features_val))
+        # pipeline.fit(features_train, target_train)
+        # y_pred = pipeline.predict(features_val)
+        # accuracy = accuracy_score(target_val, y_pred)
+        cv_accuracy = cross_val_score(pipeline, features, target, scoring='accuracy').mean()
+        cv_f1 = cross_val_score(pipeline, features, target, \
+                                scoring='f1_micro').mean()
+        cv_log_loss = cross_val_score(pipeline, features, target, scoring='neg_log_loss').mean()
+        # f1 = f1_score(target_val, y_pred)
         mlflow.log_param("use_scaler", use_scaler)
         mlflow.log_param("max_iter", max_iter)
         mlflow.log_param("logreg_c", logreg_c)
-        mlflow.log_metric("accuracy", accuracy)
-        click.echo(f"Accuracy: {accuracy}.")
+        mlflow.log_metric("accuracy_cv", cv_accuracy)
+        mlflow.log_metric("f1_score_cv", cv_f1)
+        mlflow.log_metric("Neg_log_loss_score_cv", cv_log_loss)
+        click.echo(f"Accuracy (CV): {cv_accuracy}.")
+        click.echo(f"F1 score (CV): {cv_f1}.")
+        click.echo(f"Negative Log loss score (CV): {cv_log_loss}.")
         dump(pipeline, save_model_path)
         click.echo(f"Model is saved to {save_model_path}.")
