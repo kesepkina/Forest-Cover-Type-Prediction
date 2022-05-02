@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "RS ML project"
 authors = ["Kseniya Esepkina"]
 
+[tool.poetry.scripts]
+train = "forest_cover_type.train:train"
+
 [tool.poetry.dependencies]
 python = "3.10"
 numpy = "^1.22.3"
