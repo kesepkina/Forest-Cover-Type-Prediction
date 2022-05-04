@@ -14,7 +14,7 @@ from .pipeline import create_pipeline
 def train_model(
     dataset_path: Path,
     save_model_path: Path,
-    use_scaler: bool,
+    feature_engineering: bool,
     clf: str,
     **model_params
 ) -> None:
@@ -22,12 +22,11 @@ def train_model(
         dataset_path
     )
     with mlflow.start_run():
-        pipeline = create_pipeline(use_scaler, clf, **model_params)
+        pipeline = create_pipeline(feature_engineering, clf, **model_params)
         cv_accuracy = cross_val_score(pipeline, features, target, scoring='accuracy').mean()
-        cv_f1 = cross_val_score(pipeline, features, target, \
-                                scoring='f1_macro').mean()
+        cv_f1 = cross_val_score(pipeline, features, target, scoring='f1_macro').mean()
         cv_auc_ovr = cross_val_score(pipeline, features, target, scoring='roc_auc_ovr').mean()
-        mlflow.log_param("use_scaler", use_scaler)
+        mlflow.log_param("Feature engineering type", feature_engineering)
         mlflow.log_params(model_params)
         mlflow.log_metric("accuracy_cv", cv_accuracy)
         mlflow.log_metric("f1_score_cv", cv_f1)
@@ -60,9 +59,10 @@ def train():
     show_default=True,
 )
 @click.option(
-    "--use-scaler",
-    default=True,
-    type=bool,
+    "-f",
+    "--feature-engineering",
+    default=None,
+    type=click.Choice(['st_scaler', 'minmax_scaler', 'pca2', 'pca3']),
     show_default=True,
 )
 @click.option(
@@ -87,12 +87,12 @@ def train_logreg(
     dataset_path: Path,
     save_model_path: Path,
     random_state: int,
-    use_scaler: bool,
+    feature_engineering: str,
     max_iter: int,
     logreg_c: float,
 ) -> None:
     model_params={'random_state': random_state, 'max_iter': max_iter, 'logreg_c': logreg_c}
-    train_model(dataset_path, save_model_path, use_scaler, 'logreg', **model_params)
+    train_model(dataset_path, save_model_path, feature_engineering, 'logreg', **model_params)
 
 
 @train.command('knn')
@@ -111,9 +111,10 @@ def train_logreg(
     show_default=True,
 )
 @click.option(
-    "--use-scaler",
-    default=True,
-    type=bool,
+    "-f",
+    "--feature-engineering",
+    default=None,
+    type=click.Choice(['st_scaler', 'minmax_scaler', 'pca2', 'pca3']),
     show_default=True,
 )
 @click.option(
@@ -131,13 +132,13 @@ def train_logreg(
 def train_knn(
     dataset_path: Path,
     save_model_path: Path,
-    use_scaler: bool,
+    feature_engineering: str,
     n_neighbors: int,
     weights: str,
 ) -> None:
     model_params={'n_neighbors': n_neighbors, 'weights': weights}
-    train_model(dataset_path=dataset_path, save_model_path=save_model_path, use_scaler=use_scaler,
-            clf='knn', **model_params)
+    train_model(dataset_path=dataset_path, save_model_path=save_model_path, \
+        feature_engineering=feature_engineering, clf='knn', **model_params)
 
 @train.command('forest')
 @click.option(
@@ -155,9 +156,10 @@ def train_knn(
     show_default=True,
 )
 @click.option(
-    "--use-scaler",
-    default=True,
-    type=bool,
+    "-f",
+    "--feature-engineering",
+    default=None,
+    type=click.Choice(['st_scaler', 'minmax_scaler', 'pca2', 'pca3']),
     show_default=True,
 )
 @click.option(
@@ -193,7 +195,7 @@ def train_knn(
 def train_forest(
     dataset_path: Path,
     save_model_path: Path,
-    use_scaler: bool,
+    feature_engineering: str,
     n_estimators: int,
     criterion: str,
     max_depth: int,
@@ -202,4 +204,4 @@ def train_forest(
 ) -> None:
     model_params={'n_estimators': n_estimators, 'criterion': criterion, 'max_depth': max_depth,
                     'bootstrap': bootstrap, 'random_state': random_state}
-    train_model(dataset_path, save_model_path, use_scaler, 'forest', **model_params)
+    train_model(dataset_path, save_model_path, feature_engineering, 'forest', **model_params)
