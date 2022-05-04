@@ -25,16 +25,17 @@ def train_model(
         pipeline = create_pipeline(use_scaler, clf, **model_params)
         cv_accuracy = cross_val_score(pipeline, features, target, scoring='accuracy').mean()
         cv_f1 = cross_val_score(pipeline, features, target, \
-                                scoring='f1_micro').mean()
-        cv_log_loss = cross_val_score(pipeline, features, target, scoring='neg_log_loss').mean()
+                                scoring='f1_macro').mean()
+        cv_auc_ovr = cross_val_score(pipeline, features, target, scoring='roc_auc_ovr').mean()
         mlflow.log_param("use_scaler", use_scaler)
         mlflow.log_params(model_params)
         mlflow.log_metric("accuracy_cv", cv_accuracy)
         mlflow.log_metric("f1_score_cv", cv_f1)
-        mlflow.log_metric("Neg_log_loss_score_cv", cv_log_loss)
+        mlflow.log_metric("AUC_ovr_cv", cv_auc_ovr)
+        mlflow.set_tag('ML model', clf)
         click.echo(f"Accuracy (CV): {cv_accuracy}.")
         click.echo(f"F1 score (CV): {cv_f1}.")
-        click.echo(f"Negative Log loss score (CV): {cv_log_loss}.")
+        click.echo(f"AUC One-vs-rest (CV): {cv_auc_ovr}.")
         dump(pipeline, save_model_path)
         click.echo(f"Model is saved to {save_model_path}.")
         return
@@ -80,12 +81,6 @@ def train():
     "--logreg-c",
     default=1.0,
     type=float,
-    show_default=True,
-)
-@click.option(
-    "--n-estimators",
-    default=100,
-    type=int,
     show_default=True,
 )
 def train_logreg(
