@@ -10,20 +10,23 @@ from sklearn.model_selection import GridSearchCV
 def nested_val_score(estimator, X, y, scoring):
     # define search space
     space = {}
-    if isinstance(estimator['classifier'], LogisticRegression):
+    if isinstance(estimator, LogisticRegression):
         space['max_iter'] = [100, 200, 300, 400]
         space['C'] = logspace(-2, 2)
-    elif isinstance(estimator['classifier'], KNeighborsClassifier):
+    elif isinstance(estimator, KNeighborsClassifier):
         space['n_neighbors'] = [3, 5, 7, 9, 11]
         space['weights'] = ('uniform', 'distance')
-    elif isinstance(estimator['classifier'], RandomForestClassifier):
+    elif isinstance(estimator, RandomForestClassifier):
         space['n_estimators'] = [10, 100, 300]
         space['criterion'] = ('entropy', 'gini')
         space['max_depth'] = [3, 5, 7, None]
     cv_inner = KFold(n_splits=3, shuffle=True, random_state=42)
-    search = GridSearchCV(estimator, space, scoring='roc_auc_ovr', n_jobs=1, cv=cv_inner, refit=True)
+    search = GridSearchCV(estimator, space, scoring=scoring, n_jobs=1, cv=cv_inner, refit=True)
     # configure the cross-validation procedure
     cv_outer = KFold(n_splits=5, shuffle=True, random_state=41)
     # execute the nested cross-validation
-    scores = cross_val_score(search, X, y, scoring='roc_auc_ovr', cv=cv_outer, n_jobs=-1)
-    return scores
+    cv_accuracy = cross_val_score(search, X, y, scoring='accuracy', cv=cv_outer, n_jobs=-1).mean()
+    cv_f1 = cross_val_score(search, X, y, scoring='f1_macro', cv=cv_outer, n_jobs=-1).mean()
+    cv_auc_ovr = cross_val_score(search, X, y, scoring='roc_auc_ovr', cv=cv_outer, 
+                                            n_jobs=-1).mean()
+    return cv_accuracy, cv_f1, cv_auc_ovr
