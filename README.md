@@ -21,7 +21,7 @@ To get a full list of available models, use help:
 ```sh
 poetry run train --help
 ```
-You can configure additional options (such as hyperparameters) in the CLI. To get a full list of them, use help:
+You can configure additional options (such as hyperparameters and usage of nested cross-validation) in the CLI. To get a full list of them, use help:
 ```sh
 poetry run train <ml model> --help
 ```
