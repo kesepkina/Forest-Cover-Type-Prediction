@@ -1,4 +1,3 @@
-from cmath import pi
 from pathlib import Path
 from joblib import dump
 
@@ -7,12 +6,12 @@ import mlflow
 import mlflow.sklearn
 from sklearn.manifold import TSNE
 from sklearn.model_selection import cross_val_score
-import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from .data import get_dataset
 from .pipeline import create_pipeline
 from .nested_cv import nested_val_score
+
 
 def train_model(
     dataset_path: Path,
@@ -21,36 +20,45 @@ def train_model(
     feature_engineering: str,
     nested_cv: bool,
     clf: str,
-    **model_params
+    **model_params,
 ) -> None:
-    features, target = get_dataset(
-        dataset_path
-    )
+    features, target = get_dataset(dataset_path)
     with mlflow.start_run():
-        if feature_engineering == 'tsne':
-            if scaler == 'minmax_scaler':
+        if feature_engineering == "tsne":
+            if scaler == "minmax_scaler":
                 sc = MinMaxScaler()
-            elif scaler == 'st_scaler':
+            elif scaler == "st_scaler":
                 sc = StandardScaler()
             features = sc.fit_transform(features)
-            features = TSNE(init='pca', learning_rate='auto', random_state=42).fit_transform(features)
-            pipeline = create_pipeline(None, None, clf, **model_params)
+            features = TSNE(
+                init="pca", learning_rate="auto", random_state=42
+            ).fit_transform(features)
+            pipeline = create_pipeline(clf=clf, **model_params)
         else:
-            pipeline = create_pipeline(scaler, feature_engineering, clf, **model_params)
+            pipeline = create_pipeline(
+                clf, scaler, feature_engineering, **model_params
+            )
         if nested_cv:
-            if 'scaler' in pipeline.named_steps.keys():
-                features = pipeline['scaler'].fit_transform(features)
-            if 'feature_eng' in pipeline.named_steps.keys():
-                features = pipeline['feature_eng'].fit_transform(features)
-            cv_accuracy, cv_f1, cv_auc_ovr = nested_val_score(pipeline['classifier'], features, target, \
-                scoring='roc_auc_ovr')
+            if "scaler" in pipeline.named_steps.keys():
+                features = pipeline["scaler"].fit_transform(features)
+            if "feature_eng" in pipeline.named_steps.keys():
+                features = pipeline["feature_eng"].fit_transform(features)
+            cv_accuracy, cv_f1, cv_auc_ovr = nested_val_score(
+                pipeline["classifier"], features, target, scoring="roc_auc_ovr"
+            )
         else:
-            cv_accuracy = cross_val_score(pipeline, features, target, scoring='accuracy').mean()
-            cv_f1 = cross_val_score(pipeline, features, target, scoring='f1_macro').mean()
-            cv_auc_ovr = cross_val_score(pipeline, features, target, scoring='roc_auc_ovr').mean()
-        mlflow.log_param('model', clf)
-        mlflow.log_param('scaler', scaler)
-        mlflow.log_param('nested_cv', nested_cv)
+            cv_accuracy = cross_val_score(
+                pipeline, features, target, scoring="accuracy"
+            ).mean()
+            cv_f1 = cross_val_score(
+                pipeline, features, target, scoring="f1_macro"
+            ).mean()
+            cv_auc_ovr = cross_val_score(
+                pipeline, features, target, scoring="roc_auc_ovr"
+            ).mean()
+        mlflow.log_param("model", clf)
+        mlflow.log_param("scaler", scaler)
+        mlflow.log_param("nested_cv", nested_cv)
         mlflow.log_param("Feature engineering type", feature_engineering)
         mlflow.log_params(model_params)
         mlflow.log_metric("accuracy_cv", cv_accuracy)
@@ -62,6 +70,7 @@ def train_model(
         dump(pipeline, save_model_path)
         click.echo(f"Model is saved to {save_model_path}.")
         return
+
 
 _common_options = [
     click.option(
@@ -80,38 +89,37 @@ _common_options = [
     ),
     click.option(
         "--scaler",
-        default='st_scaler',
-        type=click.Choice(['st_scaler', 'minmax_scaler']),
+        default="st_scaler",
+        type=click.Choice(["st_scaler", "minmax_scaler"]),
         show_default=True,
     ),
     click.option(
         "-f",
         "--feature-engineering",
         default=None,
-        type=click.Choice(['pca2', 'pca3', 'tsne']),
+        type=click.Choice(["pca2", "pca3", "tsne"]),
         show_default=True,
-        help="pca2 means pca with 2 components."
+        help="pca2 means pca with 2 components.",
     ),
-    click.option(
-        "--nested-cv",
-        default = False,
-        type = bool,
-        show_default = True
-    )
+    click.option("--nested-cv", default=False, type=bool, show_default=True),
 ]
+
 
 def add_options(options):
     def _add_options(func):
         for option in reversed(options):
             func = option(func)
         return func
+
     return _add_options
+
 
 @click.group()
 def train(**kwargs):
     pass
 
-@train.command('logreg')
+
+@train.command("logreg")
 @add_options(_common_options)
 @click.option(
     "--random-state",
@@ -141,11 +149,23 @@ def train_logreg(
     max_iter: int,
     logreg_c: float,
 ) -> None:
-    model_params={'random_state': random_state, 'max_iter': max_iter, 'logreg_c': logreg_c}
-    train_model(dataset_path, save_model_path, scaler, feature_engineering, nested_cv, 'logreg', **model_params)
+    model_params = {
+        "random_state": random_state,
+        "max_iter": max_iter,
+        "logreg_c": logreg_c,
+    }
+    train_model(
+        dataset_path,
+        save_model_path,
+        scaler,
+        feature_engineering,
+        nested_cv,
+        "logreg",
+        **model_params,
+    )
 
 
-@train.command('knn')
+@train.command("knn")
 @add_options(_common_options)
 @click.option(
     "--n-neighbors",
@@ -156,7 +176,7 @@ def train_logreg(
 @click.option(
     "--weights",
     default="uniform",
-    type=click.Choice(['uniform', 'distance']),
+    type=click.Choice(["uniform", "distance"]),
     show_default=True,
 )
 def train_knn(
@@ -168,10 +188,19 @@ def train_knn(
     n_neighbors: int,
     weights: str,
 ) -> None:
-    model_params={'n_neighbors': n_neighbors, 'weights': weights}
-    train_model(dataset_path, save_model_path, scaler, feature_engineering, nested_cv, 'knn', **model_params)
+    model_params = {"n_neighbors": n_neighbors, "weights": weights}
+    train_model(
+        dataset_path,
+        save_model_path,
+        scaler,
+        feature_engineering,
+        nested_cv,
+        "knn",
+        **model_params,
+    )
 
-@train.command('forest')
+
+@train.command("forest")
 @add_options(_common_options)
 @click.option(
     "--n-estimators",
@@ -181,8 +210,8 @@ def train_knn(
 )
 @click.option(
     "--criterion",
-    default='gini',
-    type=click.Choice(['gini', 'entropy']),
+    default="gini",
+    type=click.Choice(["gini", "entropy"]),
     show_default=True,
 )
 @click.option(
@@ -213,8 +242,21 @@ def train_forest(
     criterion: str,
     max_depth: int,
     bootstrap: bool,
-    random_state: int
+    random_state: int,
 ) -> None:
-    model_params={'n_estimators': n_estimators, 'criterion': criterion, 'max_depth': max_depth,
-                    'bootstrap': bootstrap, 'random_state': random_state}
-    train_model(dataset_path, save_model_path, scaler, feature_engineering, nested_cv, 'forest', **model_params)
+    model_params = {
+        "n_estimators": n_estimators,
+        "criterion": criterion,
+        "max_depth": max_depth,
+        "bootstrap": bootstrap,
+        "random_state": random_state,
+    }
+    train_model(
+        dataset_path,
+        save_model_path,
+        scaler,
+        feature_engineering,
+        nested_cv,
+        "forest",
+        **model_params,
+    )

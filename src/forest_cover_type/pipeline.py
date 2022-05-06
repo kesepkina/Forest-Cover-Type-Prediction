@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 def create_pipeline(
-    scaler: str, feature_eng: str, clf: str, **params
+    clf: str, scaler: str = None, feature_eng: str = None, **params
 ) -> Pipeline:
     pipeline_steps = []
     if scaler == "st_scaler":
