@@ -39,3 +39,18 @@ Below you can see screenshots with runs of different models with different hyper
 
 **Random forest:**
 ![MLFlow forest](https://user-images.githubusercontent.com/43503787/166759763-1aece55b-2f7d-4ddf-b06a-19fe449010b8.png)
+
+## Development
+
+The code in this repository must be tested, formatted with black, and pass mypy typechecking before being commited to the repository.
+
+Install all requirements (including dev requirements) to poetry environment:
+```
+poetry install
+```
+Now you can use developer instruments, e.g. pytest:
+```
+poetry run pytest
+```
+Expected result:
+![Tests](https://user-images.githubusercontent.com/43503787/167138592-4e36848f-4dd5-4c74-957f-b3f073186c4f.png)
