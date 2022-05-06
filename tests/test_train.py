@@ -2,6 +2,8 @@ from pathlib import Path
 from click.testing import CliRunner
 import pytest
 import joblib
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 
 from forest_cover_type.train import train
 
@@ -29,7 +31,11 @@ def test_default_knn(
                 tmp_path / 'test_model.joblib'
             ],
         )
-        print(joblib.load(tmp_path / 'test_model.joblib'))
+        pipeline = joblib.load(tmp_path / 'test_model.joblib')
+        assert isinstance(pipeline['scaler'], StandardScaler)
+        assert isinstance(pipeline['classifier'], KNeighborsClassifier)
+        assert pipeline['classifier'].n_neighbors == 5
+        assert pipeline['classifier'].weights == 'uniform'
     assert result.exit_code == 0
     assert f"Model is saved to {tmp_path}/test_model.joblib." in result.output
     assert "nan" not in result.output
