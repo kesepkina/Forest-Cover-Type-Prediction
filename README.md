@@ -42,18 +42,26 @@ Below you can see screenshots with runs of different models with different hyper
 
 ## Development
 
-The code in this repository must be tested, formatted with black, and pass mypy typechecking before being commited to the repository.
+The code in this repository must be tested, formatted with _black_, and pass _mypy_ typechecking before being commited to the repository.
 
-Install all requirements (including dev requirements) to poetry environment:
+Install all requirements (including dev requirements) to _poetry_ environment:
 ```
 poetry install
 ```
-Now you can use developer instruments, e.g. pytest:
+Now you can use developer instruments, e.g. _pytest_:
 ```
 poetry run pytest
 ```
 *Expected result:*
 ![Tests](https://user-images.githubusercontent.com/43503787/167138592-4e36848f-4dd5-4c74-957f-b3f073186c4f.png)
 
-To format my code automatically while commiting to git, I've added pre-commit, black and flake8 libraries:
+To format my code automatically while commiting to git, I've added _pre-commit_, _black_ and _flake8_ libraries:
 ![Black and flake8](https://user-images.githubusercontent.com/43503787/167148781-672a0fef-3818-4030-8483-d4f4ceba91a5.png)
+
+You can run _mypy_ to ensure the types are correct:
+```
+poetry run mypy <folder of file name>
+```
+
+_Expected result:_
+![Mypy](https://user-images.githubusercontent.com/43503787/167158376-c5fd731d-a8af-49be-a427-5c6162dd5085.png)
