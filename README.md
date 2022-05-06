@@ -52,5 +52,8 @@ Now you can use developer instruments, e.g. pytest:
 ```
 poetry run pytest
 ```
-Expected result:
+*Expected result:*
 ![Tests](https://user-images.githubusercontent.com/43503787/167138592-4e36848f-4dd5-4c74-957f-b3f073186c4f.png)
+
+To format my code automatically while commiting to git, I've added pre-commit, black and flake8 libraries:
+![Black and flake8](https://user-images.githubusercontent.com/43503787/167148781-672a0fef-3818-4030-8483-d4f4ceba91a5.png)
