@@ -64,4 +64,14 @@ poetry run mypy <folder of file name>
 ```
 
 _Expected result:_
-![Mypy](https://user-images.githubusercontent.com/43503787/167158376-c5fd731d-a8af-49be-a427-5c6162dd5085.png)
+
+<img src="https://user-images.githubusercontent.com/43503787/167158376-c5fd731d-a8af-49be-a427-5c6162dd5085.png" width="700">
+
+More conveniently, to run all sessions of testing and formatting in a single command, install and use [nox](https://nox.thea.codes/en/stable/): 
+```
+nox [-r]
+```
+
+_Expected result:_
+
+<img src="https://user-images.githubusercontent.com/43503787/167193356-be33e919-2358-4b10-8978-cce3014d0d97.png" width="500">
