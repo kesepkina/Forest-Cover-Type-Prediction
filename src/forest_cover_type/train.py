@@ -33,7 +33,7 @@ def train_model(
             elif scaler == 'st_scaler':
                 sc = StandardScaler()
             features = sc.fit_transform(features)
-            features = TSNE(init='pca', learning_rate='auto').fit_transform(features)
+            features = TSNE(init='pca', learning_rate='auto', random_state=42).fit_transform(features)
             pipeline = create_pipeline(None, None, clf, **model_params)
         else:
             pipeline = create_pipeline(scaler, feature_engineering, clf, **model_params)
@@ -42,7 +42,8 @@ def train_model(
                 features = pipeline['scaler'].fit_transform(features)
             if 'feature_eng' in pipeline.named_steps.keys():
                 features = pipeline['feature_eng'].fit_transform(features)
-            cv_accuracy, cv_f1, cv_auc_ovr = nested_val_score(pipeline['classifier'], features, target, scoring='roc_auc_ovr')
+            cv_accuracy, cv_f1, cv_auc_ovr = nested_val_score(pipeline['classifier'], features, target, \
+                scoring='roc_auc_ovr')
         else:
             cv_accuracy = cross_val_score(pipeline, features, target, scoring='accuracy').mean()
             cv_f1 = cross_val_score(pipeline, features, target, scoring='f1_macro').mean()
