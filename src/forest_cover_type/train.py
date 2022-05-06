@@ -57,6 +57,7 @@ def train_model(
                 pipeline, features, target, scoring="roc_auc_ovr"
             ).mean()
         mlflow.log_param("model", clf)
+        mlflow.sklearn.log_model(pipeline["classifier"], clf)
         mlflow.log_param("scaler", scaler)
         mlflow.log_param("nested_cv", nested_cv)
         mlflow.log_param("Feature engineering type", feature_engineering)
