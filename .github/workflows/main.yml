@@ -29,9 +29,6 @@ jobs:
         uses: actions/setup-python@v3.1.2
         with:
           python-version: 3.9
-
-      - name: Install Poetry
-        uses: dschep/install-poetry-action@v1.2
         
       - name: Setup Poetry
         # You may pin to the exact commit or the version.
