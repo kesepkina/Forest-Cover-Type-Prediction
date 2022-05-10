@@ -74,4 +74,4 @@ nox [-r]
 
 _Expected result:_
 
-<img src="https://user-images.githubusercontent.com/43503787/167193356-be33e919-2358-4b10-8978-cce3014d0d97.png" width="500">
+<img src="https://user-images.githubusercontent.com/43503787/167690225-b8ee2377-377d-4c5f-8c25-68e28dd04744.png" width="500">
