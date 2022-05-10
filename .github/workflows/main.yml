@@ -24,29 +24,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      - name: Setup Python and Poetry
-        # You may pin to the exact commit or the version.
-        # uses: ITProKyle/action-setup-python@98e1bad5dbbb801e5c75de4cfc084c3e35d16572
-        uses: ITProKyle/action-setup-python@v0.1.0
-        with:
-          # The target architecture (x86, x64) of the Python interpreter.
-#           architecture: # optional
-          # Temporary input to allow for slight customization of the cache key until full customization can be provided.
-#           cache-key-suffix: # optional
-          # Allow install of prerelease versions of Poetry.
-#           poetry-preview: # optional
-          # Poetry version to use. If version is not provided then latest stable version will be used.
-          poetry-version: 1.1.13 # optional
-          # Version range or exact version of a Python version to use, using semver version range syntax.
-          python-version: 3.9.12 # optional, default is 3.x
-          # Used to pull python distributions from actions/python-versions. Since there's a default, this is typically not supplied by the user.
-#           token: # optional, default is ${{ github.token }}
 
-#       - name: Set up Python 3.9
-#         uses: actions/setup-python@v3.1.2
-#         with:
-#           python-version: 3.9
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3.1.2
+        with:
+          python-version: 3.9
         
 #       - name: Setup Poetry
 #         # You may pin to the exact commit or the version.
@@ -67,9 +49,23 @@ jobs:
 #           restore-keys: |
 #             poetry-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Install Dependencies
-        run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
+#       - name: Install Dependencies
+#         if: steps.cache.outputs.cache-hit != 'true'
+#         run: poetry install
+        
+      - name: Setup Poetry with cache and deps
+        # You may pin to the exact commit or the version.
+        # uses: benjavicente/setup-poetry@5d5a117534fff193d5fdb2706979104e4fbed6c6
+        uses: benjavicente/setup-poetry@v0.1
+        with:
+          # The version of poetry to install
+          poetry-version: 1.1.13 # optional, default is 1.1.11
+          # If the poetry installation should use cache
+          cache-installation: True # optional, default is true
+          # If dependencies of poetry install should use cache
+          cache-dependencies: True # optional, default is true
+          # If poetry install should run
+          install-dependencies: True # optional, default is true
 
       - name: Code Quality
         run: poetry run black src tests noxfile.py --check
