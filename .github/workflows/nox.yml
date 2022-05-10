@@ -50,7 +50,7 @@ jobs:
 #             poetry-${{ hashFiles('**/poetry.lock') }}
         
       - name: Install Nox
-        run: install nox
+        run: pip install nox
 
       - name: Run nox
         run: nox
