@@ -48,10 +48,6 @@ jobs:
           key: poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             poetry-${{ hashFiles('**/poetry.lock') }}
-            
-      - name: Install Dependencies
-        run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
         
       - name: Setup Nox
         # You may pin to the exact commit or the version.
