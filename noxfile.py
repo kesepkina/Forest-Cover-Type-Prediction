@@ -6,6 +6,9 @@ from typing import Any
 import nox
 from nox.sessions import Session
 
+nox.options.envdir = ".cache"
+nox.options.reuse_existing_virtualenvs = True
+
 nox.options.sessions = "black", "flake8", "mypy", "tests"
 locations = "src", "tests", "noxfile.py"
 

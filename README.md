@@ -60,7 +60,7 @@ To format my code automatically while commiting to git, I've added _pre-commit_,
 
 You can run _mypy_ to ensure the types are correct:
 ```
-poetry run mypy <folder of file name>
+poetry run mypy <folder or file name>
 ```
 
 _Expected result:_

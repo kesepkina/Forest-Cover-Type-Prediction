@@ -102,7 +102,11 @@ _common_options = [
         show_default=True,
         help="pca2 means pca with 2 components.",
     ),
-    click.option("--nested-cv", default=False, type=bool, show_default=True),
+    click.option(
+        "--nested-cv/--no-nested-cv",
+        default=False,
+        show_default=True,
+    ),
 ]
 
 

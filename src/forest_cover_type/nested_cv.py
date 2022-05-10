@@ -20,12 +20,12 @@ def nested_val_score(estimator, X, y, scoring):
         space["n_estimators"] = [10, 100, 300]
         space["criterion"] = ("entropy", "gini")
         space["max_depth"] = [3, 5, 7, None]
-    cv_inner = KFold(n_splits=3, shuffle=True, random_state=42)
+    cv_inner = KFold(n_splits=4, shuffle=True, random_state=42)
     search = GridSearchCV(
-        estimator, space, scoring=scoring, n_jobs=1, cv=cv_inner, refit=True
+        estimator, space, scoring=scoring, cv=cv_inner, refit=True
     )
     # configure the cross-validation procedure
-    cv_outer = KFold(n_splits=5, shuffle=True, random_state=41)
+    cv_outer = KFold(n_splits=4, shuffle=True, random_state=41)
     # execute the nested cross-validation
     cv_accuracy = cross_val_score(
         search, X, y, scoring="accuracy", cv=cv_outer, n_jobs=-1
