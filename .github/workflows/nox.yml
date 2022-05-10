@@ -49,10 +49,8 @@ jobs:
 #           restore-keys: |
 #             poetry-${{ hashFiles('**/poetry.lock') }}
         
-      - name: Setup Nox
-        # You may pin to the exact commit or the version.
-        # uses: excitedleigh/setup-nox@38c698655f40d5fe659b8589764ed04ee36d0414
-        uses: excitedleigh/setup-nox@v2.0.0
+      - name: Install Nox
+        run: install nox
 
       - name: Run nox
         run: nox
