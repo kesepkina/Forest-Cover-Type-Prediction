@@ -37,9 +37,9 @@ jobs:
           # Allow install of prerelease versions of Poetry.
 #           poetry-preview: # optional
           # Poetry version to use. If version is not provided then latest stable version will be used.
-          poetry-version: 1.1.13# optional
+          poetry-version: 1.1.13 # optional
           # Version range or exact version of a Python version to use, using semver version range syntax.
-          python-version: 3.9# optional, default is 3.x
+          python-version: 3.9.12 # optional, default is 3.x
           # Used to pull python distributions from actions/python-versions. Since there's a default, this is typically not supplied by the user.
 #           token: # optional, default is ${{ github.token }}
 
