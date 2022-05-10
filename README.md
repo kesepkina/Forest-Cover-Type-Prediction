@@ -40,6 +40,9 @@ Below you can see screenshots with runs of different models with different hyper
 **Random forest:**
 ![MLFlow forest](https://user-images.githubusercontent.com/43503787/166759763-1aece55b-2f7d-4ddf-b06a-19fe449010b8.png)
 
+**Using Nested-CV for hyperparameter tuning:**
+...
+
 ## Development
 
 The code in this repository must be tested, formatted with _black_, and pass _mypy_ typechecking before being commited to the repository.
