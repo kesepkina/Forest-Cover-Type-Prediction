@@ -43,10 +43,10 @@ def train_model(
                 features = pipeline["scaler"].fit_transform(features)
             if "feature_eng" in pipeline.named_steps.keys():
                 features = pipeline["feature_eng"].fit_transform(features)
-            pipeline["classifier"] = nested_val_score(
+            model_params = nested_val_score(
                 pipeline["classifier"], features, target, scoring="roc_auc_ovr"
             )
-            model_params = pipeline["classifier"].get_params()
+            pipeline["classifier"].set_params(**model_params)
         cv_accuracy = cross_val_score(
             pipeline, features, target, scoring="accuracy"
         ).mean()
