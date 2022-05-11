@@ -43,19 +43,19 @@ def train_model(
                 features = pipeline["scaler"].fit_transform(features)
             if "feature_eng" in pipeline.named_steps.keys():
                 features = pipeline["feature_eng"].fit_transform(features)
-            cv_accuracy, cv_f1, cv_auc_ovr = nested_val_score(
+            pipeline["classifier"] = nested_val_score(
                 pipeline["classifier"], features, target, scoring="roc_auc_ovr"
             )
-        else:
-            cv_accuracy = cross_val_score(
-                pipeline, features, target, scoring="accuracy"
-            ).mean()
-            cv_f1 = cross_val_score(
-                pipeline, features, target, scoring="f1_macro"
-            ).mean()
-            cv_auc_ovr = cross_val_score(
-                pipeline, features, target, scoring="roc_auc_ovr"
-            ).mean()
+            model_params = pipeline["classifier"].get_params()
+        cv_accuracy = cross_val_score(
+            pipeline, features, target, scoring="accuracy"
+        ).mean()
+        cv_f1 = cross_val_score(
+            pipeline, features, target, scoring="f1_macro"
+        ).mean()
+        cv_auc_ovr = cross_val_score(
+            pipeline, features, target, scoring="roc_auc_ovr"
+        ).mean()
         mlflow.log_param("model", clf)
         mlflow.sklearn.log_model(pipeline["classifier"], clf)
         mlflow.log_param("scaler", scaler)
