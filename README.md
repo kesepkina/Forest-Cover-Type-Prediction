@@ -41,7 +41,13 @@ Below you can see screenshots with runs of different models with different hyper
 ![MLFlow forest](https://user-images.githubusercontent.com/43503787/166759763-1aece55b-2f7d-4ddf-b06a-19fe449010b8.png)
 
 **Using Nested-CV for hyperparameter tuning:**
-...
+
+*Example of the output:*
+![image](https://user-images.githubusercontent.com/43503787/167865886-cf11577a-6732-4762-acdb-316d60881e61.png)
+
+*MLflow:*
+![image](https://user-images.githubusercontent.com/43503787/167886335-d9572d0d-4312-4160-969a-2d7ade1a38be.png)
+
 
 ## Development
 
